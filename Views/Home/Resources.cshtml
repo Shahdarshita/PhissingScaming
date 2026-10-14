@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Resources";
+}
+<div class="mb-4">
+    <h2 class="gradient-title mb-1">Emergency Resources &amp; Helpline</h2>
+    <p class="small-muted mb-0">Follow these critical protocols if you believe your credentials or financial accounts have been compromised.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card p-4 h-100">
+            <h5 class="card-title text-warning mb-3">🚨 Immediate Action Steps</h5>
+            <ol class="text-secondary ps-3 mb-4 d-flex flex-column gap-2">
+                <li><strong class="text-light">Stop all communications:</strong> Block the suspect phone number, email address, or social profile.</li>
+                <li><strong class="text-light">Do not transfer funds:</strong> Never send additional money or gift cards under any circumstance.</li>
+                <li><strong class="text-light">Never disclose secrets:</strong> Keep OTPs, PINs, bank passwords, and security answers confidential.</li>
+                <li><strong class="text-light">Contact your financial institution:</strong> Immediately request card freeze and fraud dispute.</li>
+                <li><strong class="text-light">Secure compromised accounts:</strong> Change passwords and enable 2-Factor Authentication (2FA).</li>
+                <li><strong class="text-light">Lodge official cyber report:</strong> Report details to cybercrime portal and local authorities.</li>
+            </ol>
+
+            <h5 class="card-title text-info mb-2">Government &amp; Reporting Resources</h5>
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-2">
+                <a href="https://cybercrime.gov.in/" target="_blank" rel="noopener" class="btn btn-outline-light">
+                    🌐 National Cyber Crime Portal
+                </a>
+                <div class="p-2 px-3 rounded border border-warning border-opacity-50 bg-warning bg-opacity-10 text-warning fw-bold">
+                    📞 Helpline: 1930
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <h5 class="mb-3 text-light">Frequently Asked Questions</h5>
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q1">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">How do I verify a suspicious email?</button>
+                </h2>
+                <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Check the full sender address header, inspect link URLs before clicking, and contact the organization using contact numbers from their official website.</div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">Should I ever share OTPs with support?</button>
+                </h2>
+                <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">No. OTPs are private authentication tokens. Bank employees and support agents will never ask for your OTP.</div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">What if I clicked a suspicious link?</button>
+                </h2>
+                <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Disconnect from Wi-Fi immediately, change passwords from an uncompromised device, notify your bank, and run an antivirus scan.</div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">How to report scams?</button>
+                </h2>
+                <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">File a complaint at cybercrime.gov.in or dial National Cyber Crime Helpline at 1930 immediately.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

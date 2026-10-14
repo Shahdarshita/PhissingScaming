@@ -1,0 +1,119 @@
+@model PhissingScaming.Models.DetectorViewModel
+@{
+    ViewData["Title"] = "Scam & Phishing Analyzer";
+}
+<div class="mb-4">
+    <h2 class="gradient-title mb-1">Scam &amp; Phishing Analyzer</h2>
+    <p class="small-muted mb-0">Paste a suspicious email, message, or upload a screenshot to execute an AI rule-based heuristic check.</p>
+</div>
+
+<ul class="nav nav-tabs mb-4" id="analyzerTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab">📝 Text Analyzer</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button" role="tab">🖼️ Image Checker</button>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="text" role="tabpanel">
+        <div class="card p-4">
+            <form method="post" asp-action="AnalyzeText">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label for="MessageText" class="form-label">Paste message text for analysis</label>
+                    <textarea class="form-control font-monospace" id="MessageText" name="MessageText" rows="6" placeholder="e.g. Your bank account is locked! Click http://bit.ly/verify-now to verify your OTP immediately..."></textarea>
+                    <span class="text-danger small">@Html.ValidationMessage("MessageText")</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-brand">⚡ Analyze Message</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="clearTextArea()">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        @if (Model != null && (Model.DetectedFlags?.Any() ?? false || Model.RiskScore > 0))
+        {
+            var alertClass = "alert-success";
+            if (Model.RiskScore >= 6) alertClass = "alert-danger";
+            else if (Model.RiskScore >= 3) alertClass = "alert-warning";
+
+            <div class="mt-4 alert @alertClass fade-in-up">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="m-0 fw-bold">
+                        @if (Model.RiskScore >= 6)
+                        {
+                            <span>🟥 HIGH RISK SCAM DETECTED</span>
+                        }
+                        else if (Model.RiskScore >= 3)
+                        {
+                            <span>🟧 MEDIUM SUSPICION DETECTED</span>
+                        }
+                        else
+                        {
+                            <span>🟩 LOW RISK MESSAGE</span>
+                        }
+                    </h5>
+                    <span class="badge bg-dark border">Risk Score: @Model.RiskScore / 10</span>
+                </div>
+
+                @if (Model.DetectedFlags?.Any() ?? false)
+                {
+                    <p class="mb-1 fw-semibold">Detected Red Flags:</p>
+                    <ul class="mb-3">
+                        @foreach (var f in Model.DetectedFlags)
+                        {
+                            <li>@f</li>
+                        }
+                    </ul>
+                }
+
+                <p class="mb-1 fw-semibold">Recommended Actions:</p>
+                <ul class="mb-2">
+                    @foreach (var r in Model.RecommendedActions)
+                    {
+                        <li>@r</li>
+                    }
+                </ul>
+                <p class="mt-3 mb-0 fst-italic opacity-75"><small>@Model.ResultMessage</small></p>
+            </div>
+        }
+    </div>
+
+    <div class="tab-pane fade" id="image" role="tabpanel">
+        <div class="card p-4">
+            <form method="post" asp-action="AnalyzeImage" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="form-label">Upload screenshot (.jpg, .jpeg, .png) &lt;= 2MB</label>
+                    <input type="file" class="form-control" id="screenshot" name="screenshot" accept=".jpg,.jpeg,.png" onchange="previewImage(event)" />
+                    <span class="text-danger small">@Html.ValidationMessage("ImageError")</span>
+                </div>
+                <div class="mb-3" id="previewContainer" style="display:none;">
+                    <p class="mb-2 text-secondary small fw-medium">Preview:</p>
+                    <img id="previewImage" src="#" alt="Preview" style="max-width:100%; max-height: 300px; object-fit: contain; border:1px solid var(--border-light); border-radius: var(--radius-sm);" />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-brand">🔍 Validate Image</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('screenshot').value = null; document.getElementById('previewContainer').style.display = 'none'">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model?.ImageValidationMessage))
+        {
+            <div class="mt-4 alert alert-info fade-in-up">
+                <p class="fw-semibold">@Model.ImageValidationMessage</p>
+                <p class="mb-1 fw-semibold">Manual Verification Checklist:</p>
+                <ul class="mb-0">
+                    @foreach (var item in Model.ImageChecklist)
+                    {
+                        <li>@item</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>

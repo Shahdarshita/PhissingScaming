@@ -1,0 +1,37 @@
+root = true
+
+[*.{cs,cshtml}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+# Use PascalCase for types and methods, camelCase for parameters and private fields with underscore prefix
+dotnet_naming_rule.types_and_methods_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.types_and_methods_should_be_pascal_case.symbols = all_symbols
+dotnet_naming_rule.types_and_methods_should_be_pascal_case.style = pascal_case_style
+
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+dotnet_naming_rule.private_fields_should_start_with_underscore.severity = suggestion
+dotnet_naming_rule.private_fields_should_start_with_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_should_start_with_underscore.style = underscore_camel_case_style
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.underscore_camel_case_style.capitalization = camel_case
+dotnet_naming_style.underscore_camel_case_style.required_prefix = _
+
+# Prefer explicit type for educational clarity
+csharp_style_var_elsewhere = false:suggestion
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = false:suggestion
+
+# File-scoped namespaces are allowed but keep simple for students
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+[*.cshtml]
+indent_style = space
+indent_size = 4

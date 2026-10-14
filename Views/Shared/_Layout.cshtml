@@ -1,0 +1,83 @@
+@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PhishGuard — Next-Gen Security & Fraud Awareness</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+    <!-- Next.js style ambient background glow mesh -->
+    <div class="glow-mesh-container" aria-hidden="true">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg sticky-top custom-navbar">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <div class="brand-logo-icon me-2">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 7V12C3 17.523 7.03 21.74 12 23C16.97 21.74 21 17.523 21 12V7L12 2Z" stroke="url(#shield-grad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 8V13M12 16H12.01" stroke="#00F2FE" stroke-width="2.2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="shield-grad" x1="3" y1="2" x2="21" y2="23" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#00F2FE"/>
+                                <stop offset="1" stop-color="#4FACFE"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="brand-text">Phish<span class="brand-accent">Guard</span></span>
+                <span class="badge badge-nextjs ms-2">v2.0</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto gap-1">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Home/Modules">Awareness</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Quiz">Quiz</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Detector">Detector</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Home/Resources">Resources</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5 main-content-wrapper fade-in-up">
+        @RenderBody()
+    </main>
+
+    <footer class="custom-footer mt-auto py-4">
+        <div class="container text-center">
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                <span class="footer-dot"></span>
+                <span class="text-secondary small fw-medium">PhishGuard Security Intelligence — Educational Awareness Platform</span>
+            </div>
+            <small class="text-muted opacity-75">&copy; 2026 PhishGuard. Built with ASP.NET Core &amp; Next.js Design Architecture.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/site.js" asp-append-version="true"></script>
+</body>
+
+</html>
