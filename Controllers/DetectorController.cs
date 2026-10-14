@@ -1,18 +1,15 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using PhissingScaming.Models;
-using System.Text.RegularExpressions;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using PhissingScaming.Models;
 
 namespace PhissingScaming.Controllers
 {
     public class DetectorController : Controller
     {
-        // GET: /Detector/Index
-        [HttpGet]
+        // GET: /Detector
         public IActionResult Index()
         {
             var model = new DetectorViewModel();
@@ -24,9 +21,7 @@ namespace PhissingScaming.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AnalyzeText(DetectorViewModel model)
         {
-            if (model == null) model = new DetectorViewModel();
-
-            if (string.IsNullOrWhiteSpace(model.MessageText))
+            if (model == null || string.IsNullOrWhiteSpace(model.MessageText))
             {
                 ModelState.AddModelError("MessageText", "Please paste a message to analyze.");
                 return View("Index", model);
@@ -39,27 +34,111 @@ namespace PhissingScaming.Controllers
             int score = 0;
             var flags = new List<string>();
 
-            // Keywords with weights
+            // Expanded keywords and phishing trigger phrases with weights
             var keywordRules = new Dictionary<string, int>
             {
+                // Urgency, pressure, and threats
                 { "urgent", 2 },
                 { "immediately", 2 },
-                { "verify account", 1 },
-                { "account suspended", 2 },
-                { "bank", 1 },
+                { "action required", 2 },
+                { "immediate action required", 3 },
+                { "within 24 hours", 2 },
+                { "within 12 hours", 2 },
+                { "last warning", 3 },
+                { "final notice", 3 },
+                { "deadline", 2 },
+                { "limited time", 2 },
+                { "time sensitive", 2 },
+                { "expires today", 2 },
+                { "act now", 2 },
+                { "attention required", 2 },
+
+                // Account alerts & suspension threats
+                { "account suspended", 3 },
+                { "account locked", 3 },
+                { "account blocked", 3 },
+                { "blocked", 2 },
+                { "temporary suspension", 2 },
+                { "unusual activity", 2 },
+                { "suspicious activity", 2 },
+                { "unauthorized access", 3 },
+                { "security alert", 2 },
+                { "compromised", 2 },
+                { "reactivate account", 2 },
+                { "re-activate", 2 },
+                { "restore access", 2 },
+                { "access restricted", 2 },
+
+                // Verification & KYC / Identity theft
+                { "verify account", 2 },
+                { "verify identity", 2 },
+                { "verification required", 2 },
+                { "verify", 1 },
+                { "kyc", 2 },
+                { "kyc update", 3 },
+                { "kyc verification", 3 },
+                { "update kyc", 3 },
+                { "pan card", 2 },
+                { "aadhaar", 2 },
+                { "social security", 3 },
+                { "ssn", 3 },
+                { "confirm your details", 2 },
+                { "validate credentials", 2 },
+
+                // Credentials / Secrets theft
                 { "otp", 3 },
                 { "one time password", 3 },
                 { "password", 3 },
-                { "click here", 2 },
+                { "passcode", 3 },
+                { "pin", 3 },
+                { "cvv", 3 },
+                { "cvv2", 3 },
+                { "security code", 3 },
+                { "login credentials", 3 },
+                { "reset password", 2 },
+                { "change password", 2 },
+
+                // Banking, Financial, Taxes, & Delivery scams
+                { "bank", 1 },
+                { "netbanking", 2 },
+                { "credit card", 2 },
+                { "debit card", 2 },
+                { "wire transfer", 2 },
+                { "bank transfer", 2 },
+                { "billing problem", 2 },
+                { "unpaid invoice", 2 },
+                { "overdue payment", 2 },
+                { "refund", 2 },
+                { "tax refund", 3 },
+                { "income tax refund", 3 },
+                { "package delivery", 2 },
+                { "parcel suspended", 2 },
+                { "customs fee", 2 },
+                { "delivery failed", 2 },
+
+                // Lures, Prizes, Crypto, & Lotteries
                 { "congratulations", 1 },
-                { "prize", 1 },
-                { "lottery", 1 },
-                { "refund", 1 },
-                { "kyc", 1 },
-                { "blocked", 2 },
-                { "limited time", 2 },
+                { "prize", 2 },
+                { "lottery", 3 },
+                { "winner", 2 },
+                { "you have won", 3 },
                 { "claim now", 2 },
-                { "verify", 1 }
+                { "claim reward", 2 },
+                { "cash reward", 2 },
+                { "exclusive offer", 1 },
+                { "free gift", 2 },
+                { "bonus reward", 2 },
+                { "crypto gift", 3 },
+                { "airdrop", 2 },
+
+                // Call to actions / Deceptive links
+                { "click here", 2 },
+                { "tap here", 2 },
+                { "click the link", 2 },
+                { "open attachment", 2 },
+                { "download attachment", 2 },
+                { "log in here", 2 },
+                { "signin link", 2 }
             };
 
             foreach (var kv in keywordRules)
@@ -67,15 +146,22 @@ namespace PhissingScaming.Controllers
                 if (lower.Contains(kv.Key))
                 {
                     score += kv.Value;
-                    flags.Add($"Keyword detected: \"{kv.Key}\" (+{kv.Value})");
+                    flags.Add($"Keyword/Trigger detected: \"{kv.Key}\" (+{kv.Value})");
                 }
             }
 
-            // Suspicious link checks
-            if (lower.Contains("http://") || lower.Contains("https://"))
+            // Suspicious link and shortener checks
+            var shorteners = new[] { "bit.ly", "tinyurl.com", "t.co", "is.gd", "goo.gl", "cutt.ly", "ow.ly", "rb.gy" };
+            if (lower.Contains("http://") || lower.Contains("https://") || lower.Contains("www."))
             {
                 score += 2;
-                flags.Add("Suspicious link detected (+2)");
+                flags.Add("Link/URL detected (+2)");
+
+                if (shorteners.Any(s => lower.Contains(s)))
+                {
+                    score += 2;
+                    flags.Add("Obfuscated or shortened link detected (+2)");
+                }
             }
 
             // Too many capital letters (heuristic)
@@ -95,18 +181,18 @@ namespace PhissingScaming.Controllers
             }
 
             // Requests for money/payment
-            var moneyWords = new[] { "pay", "payment", "transfer", "send money", "bank transfer" };
+            var moneyWords = new[] { "pay", "payment", "transfer", "send money", "bank transfer", "wire money", "crypto", "bitcoin", "gift card" };
             if (moneyWords.Any(w => lower.Contains(w)))
             {
                 score += 2;
-                flags.Add("Request for money/payment detected (+2)");
+                flags.Add("Request for money/payment/transfer detected (+2)");
             }
 
             // OTP or password request (higher severity)
-            if (lower.Contains("otp") || lower.Contains("one time password") || lower.Contains("password") || lower.Contains("pin"))
+            if (lower.Contains("otp") || lower.Contains("one time password") || lower.Contains("password") || lower.Contains("pin") || lower.Contains("cvv"))
             {
                 score += 3;
-                flags.Add("Request for OTP/password/PIN detected (+3)");
+                flags.Add("Request for sensitive credentials (OTP/password/PIN/CVV) detected (+3)");
             }
 
             // Build risk level
